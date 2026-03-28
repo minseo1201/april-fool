@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CLICK 만우절 보안 잠금 챌린지</title>
+  <style>
+    :root {
+      --bg: #ffd7ea;
+      --panel: #fff7fb;
+      --panel-2: #ffeef7;
+      --pink-1: #ffb7d8;
+      --pink-2: #ff8ec2;
+      --pink-3: #f567a7;
+      --pink-4: #d94a8c;
+      --line: #7d3b63;
+      --shadow: #b95b91;
+      --white: #fffdfd;
+      --text: #6f3d5c;
+      --blue: #bcecff;
+      --mint: #cef7d9;
+      --yellow: #ffe38a;
+      --lavender: #ead8ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "Trebuchet MS", "Verdana", Arial, Helvetica, sans-serif;
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,0.18) 1px, transparent 1px),
+        linear-gradient(to right, rgba(255,255,255,0.18) 1px, transparent 1px),
+        linear-gradient(180deg, #ffdff0 0%, #ffd0e7 100%);
+      background-size: 24px 24px, 24px 24px, auto;
+      color: var(--text);
+      image-rendering: pixelated;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 16px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .cloud-deco {
+      position: fixed;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+      z-index: 0;
+      background-image: url('pink-cloud.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: min(720px, 92vw) auto;
+      opacity: 0.95;
+    }
+
+    .cloud-top {
+      top: 6px;
+      height: 240px;
+    }
+
+    .cloud-bottom {
+      bottom: 10px;
+      height: 240px;
+      transform: scaleY(-1);
+      opacity: 0.5;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      max-width: 760px;
+      background: var(--panel);
+      border: 4px solid var(--line);
+      box-shadow: 0 0 0 4px var(--pink-2), 8px 8px 0 0 var(--shadow);
+      padding: 24px;
+      z-index: 1;
+    }
+
+    .container::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border: 2px dashed #ffc1df;
+      pointer-events: none;
+    }
+
+    .pixel-stars {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .pixel-stars span {
+      position: absolute;
+      font-size: 18px;
+      opacity: 0.8;
+      animation: floatStar 3s ease-in-out infinite;
+    }
+
+    .pixel-stars span:nth-child(1) { top: 18px; left: 20px; color: var(--yellow); }
+    .pixel-stars span:nth-child(2) { top: 40px; right: 34px; color: var(--lavender); animation-delay: .5s; }
+    .pixel-stars span:nth-child(3) { bottom: 26px; left: 34px; color: var(--blue); animation-delay: 1s; }
+    .pixel-stars span:nth-child(4) { bottom: 42px; right: 26px; color: var(--mint); animation-delay: 1.5s; }
+
+    @keyframes floatStar {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .brand-logo {
+      text-align: center;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-logo img {
+      width: 132px;
+      max-width: 38%;
+      image-rendering: pixelated;
+      filter: drop-shadow(4px 4px 0 rgba(245, 103, 167, 0.18));
+    }
+
+    .title {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      margin: 0 0 10px;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 900;
+      color: var(--pink-4);
+      letter-spacing: -0.03em;
+      text-shadow: 2px 2px 0 #fff, 4px 4px 0 #ffd2e7;
+    }
+
+    .subtitle {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      margin: 0 auto 22px;
+      max-width: 560px;
+      line-height: 1.8;
+      padding: 12px 16px;
+      background: var(--panel-2);
+      border: 3px solid #ffc0de;
+      box-shadow: 4px 4px 0 #ffd5e8;
+    }
+
+    .page {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .page.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      animation: pageIn .28s steps(5, end);
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: linear-gradient(180deg, #fffafd 0%, #ffeef7 100%);
+      border: 4px solid var(--line);
+      box-shadow: 0 0 0 4px #ffcae3, 6px 6px 0 #d97bab;
+      padding: 24px;
+      position: relative;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 10px;
+      background: repeating-linear-gradient(
+        90deg,
+        #ffc2de 0 16px,
+        #ffd9eb 16px 32px,
+        #fff2f8 32px 48px,
+        #c8f0ff 48px 64px,
+        #d9ffd8 64px 80px,
+        #ffe796 80px 96px
+      );
+    }
+
+    .center { text-align: center; }
+
+    .status {
+      font-size: 1.45rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: var(--pink-4);
+      text-shadow: 1px 1px 0 #fff;
+    }
+
+    .desc {
+      color: var(--text);
+      font-size: 1rem;
+      line-height: 1.85;
+      margin-bottom: 18px;
+    }
+
+    .mission-title {
+      display: inline-block;
+      margin: 0 auto 14px;
+      padding: 8px 14px;
+      background: #ffd4e8;
+      border: 3px solid var(--line);
+      box-shadow: 4px 4px 0 #ef8fbc;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--pink-4);
+    }
+
+    .question {
+      margin-bottom: 18px;
+      line-height: 1.8;
+      white-space: pre-line;
+      font-size: 1rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      appearance: none;
+      border: 3px solid var(--line);
+      background: linear-gradient(180deg, #ffc8e1 0%, #ff98c7 100%);
+      color: var(--white);
+      padding: 14px 20px;
+      font-size: 0.98rem;
+      cursor: pointer;
+      font-weight: 900;
+      box-shadow: 0 0 0 3px #ffdceb, 4px 4px 0 #c25993;
+      transition: transform .08s steps(2, end), box-shadow .08s steps(2, end), filter .12s ease;
+      text-shadow: 1px 1px 0 #b33f79;
+      min-width: 130px;
+      letter-spacing: 0.01em;
+    }
+
+    button:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 0 0 0 3px #ffdceb, 2px 2px 0 #c25993;
+      filter: brightness(1.03);
+    }
+
+    button:active {
+      transform: translate(4px, 4px);
+      box-shadow: 0 0 0 3px #ffdceb, 0 0 0 #c25993;
+    }
+
+    .secondary {
+      background: linear-gradient(180deg, #fff5fb 0%, #ffc8e1 100%);
+      color: var(--pink-4);
+      text-shadow: none;
+    }
+
+    .lock-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .lock-wrap::before,
+    .lock-wrap::after {
+      content: "✦";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 24px;
+      color: #ff80bf;
+      text-shadow: 2px 2px 0 #fff;
+      animation: twinkle 1.8s steps(3, end) infinite;
+    }
+
+    .lock-wrap::before { left: -28px; }
+    .lock-wrap::after { right: -28px; animation-delay: .6s; }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: .7; transform: translateY(-50%) scale(1); }
+      50% { opacity: 1; transform: translateY(-54%) scale(1.15); }
+    }
+
+    .lock-image {
+      width: 232px;
+      max-width: 72%;
+      display: block;
+      margin: 0 auto;
+      image-rendering: pixelated;
+      filter: drop-shadow(6px 6px 0 rgba(245, 103, 167, 0.22));
+      transition: transform .2s steps(3, end), filter .2s ease;
+    }
+
+    .clickable-lock {
+      cursor: pointer;
+    }
+
+    .clickable-lock:hover {
+      transform: translateY(-2px);
+      filter: drop-shadow(6px 8px 0 rgba(245, 103, 167, 0.28));
+    }
+
+    .lock-open {
+      animation: shakeLock .42s steps(4, end);
+    }
+
+    @keyframes shakeLock {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-4px) rotate(-2deg); }
+      40% { transform: translateX(5px) rotate(2deg); }
+      60% { transform: translateX(-3px) rotate(-1deg); }
+      80% { transform: translateX(4px) rotate(1deg); }
+      100% { transform: translateX(0); }
+    }
+
+    .feedback {
+      min-height: 62px;
+      padding: 14px 16px;
+      margin-top: 18px;
+      line-height: 1.75;
+      font-weight: 700;
+      background: #fffafd;
+      border: 3px dashed #ffb6d8;
+      color: var(--text);
+      text-align: center;
+      box-shadow: inset 0 0 0 3px #fff;
+    }
+
+    .feedback.success {
+      border-style: solid;
+      border-color: #ff8ec2;
+      background: linear-gradient(90deg, #fff9c9 0%, #ffe7f3 50%, #dcfff0 100%);
+      color: #c04c87;
+      animation: successBlink .8s steps(2, end) infinite;
+    }
+
+    .feedback.error {
+      border-color: #f48cbf;
+      background: #fff1f6;
+      color: #bc4e86;
+    }
+
+    @keyframes successBlink {
+      0%, 100% { box-shadow: inset 0 0 0 3px #fff, 0 0 0 0 rgba(255, 142, 194, 0.25); }
+      50% { box-shadow: inset 0 0 0 3px #fff, 0 0 0 5px rgba(255, 142, 194, 0.22); }
+    }
+
+    .transition-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 213, 234, 0.68);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s steps(3, end);
+      z-index: 999;
+      padding: 20px;
+    }
+
+    .transition-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .transition-box {
+      min-width: 280px;
+      max-width: 92vw;
+      padding: 24px 22px;
+      text-align: center;
+      background: #fff8fc;
+      border: 4px solid var(--line);
+      box-shadow: 0 0 0 4px #ffbddc, 8px 8px 0 #c76a9a;
+    }
+
+    .transition-lock {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      animation: loadingBlink .7s steps(2, end) infinite;
+    }
+
+    .transition-text {
+      font-size: 1rem;
+      line-height: 1.8;
+      font-weight: 900;
+      color: var(--pink-4);
+    }
+
+    @keyframes loadingBlink {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .meter-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 10px 0 18px;
+    }
+
+    .meter-label {
+      font-weight: 900;
+      color: var(--pink-4);
+      margin-right: 2px;
+    }
+
+    .heart-icon {
+      width: 26px;
+      height: 26px;
+      image-rendering: pixelated;
+      filter: drop-shadow(2px 2px 0 rgba(227, 144, 185, 0.42));
+    }
+
+    .heart-icon.empty {
+      opacity: 0.34;
+      filter: grayscale(0.25) brightness(1.08);
+    }
+
+    .footer-note {
+      text-align: center;
+      color: #8d6d62;
+      font-size: 0.92rem;
+      line-height: 1.8;
+      margin-top: 18px;
+      padding: 12px 16px;
+      background: #fff2f8;
+      border: 3px solid #ffc4df;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 18px; }
+      .card { padding: 20px 16px; }
+      .title { font-size: 1.5rem; }
+      button { width: 100%; }
+      .button-group { gap: 10px; }
+      .lock-wrap::before, .lock-wrap::after { display: none; }
+      .cloud-top, .cloud-bottom { background-size: 92vw auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cloud-deco cloud-top" aria-hidden="true"></div>
+  <div class="cloud-deco cloud-bottom" aria-hidden="true"></div>
+
+  <div class="container">
+    <div class="pixel-stars" aria-hidden="true">
+      <span>✦</span>
+      <span>✦</span>
+      <span>✦</span>
+      <span>✦</span>
+    </div>
+
+    <div class="brand-logo">
+      <img src="CLICK 로고.png" alt="CLICK 로고" onerror="this.style.display='none'" />
+    </div>
+
+    <h1 class="title">CLICK 만우절 보안 잠금 챌린지</h1>
+
+    <div class="subtitle">
+      사이버보안학과 학생회 CLICK 만우절 이벤트 페이지입니다.<br />
+      열린 자물쇠를 다시 잠그려면 보안 퀴즈를 통과해 주세요.
+    </div>
+
+    <section id="page1" class="page active">
+      <div class="card center">
+        <div class="lock-wrap">
+          <img class="lock-image clickable-lock" id="openLockImage" src="open-lock-logo.png" alt="열린 자물쇠" onclick="startLockSequence()" />
+        </div>
+
+        <audio id="clickSound" preload="auto">
+          <source src="https://actions.google.com/sounds/v1/impacts/metal_clank.ogg" type="audio/ogg">
+        </audio>
+
+        <div class="meter-row" aria-hidden="true">
+          <span class="meter-label">SECURITY</span>
+          <img class="heart-icon" src="pixel-heart.png" alt="" />
+          <img class="heart-icon" src="pixel-heart.png" alt="" />
+          <img class="heart-icon empty" src="pixel-heart.png" alt="" />
+        </div>
+
+        <div class="status">보안 시스템이 해제되어 있어요</div>
+        <div class="desc">
+          현재 학생회 보안 자물쇠가 열린 상태입니다.<br />
+          게임 시작하기 버튼을 눌러 보안 퀴즈를 풀고 잠금 시스템을 복구해 주세요.
+        </div>
+        <div class="button-group">
+          <button class="primary" onclick="goToPage(2)">게임 시작하기</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="page2" class="page">
+      <div class="card">
+        <div class="center">
+          <div class="mission-title" id="missionTitle">보안 퀴즈</div>
+        </div>
+        <div class="question center" id="missionQuestion"></div>
+        <div id="missionContent"></div>
+        <div class="feedback" id="feedbackBox">정답을 선택하면 자물쇠를 다시 잠글 수 있습니다.</div>
+      </div>
+    </section>
+
+    <section id="page3" class="page">
+      <div class="card center">
+        <div class="lock-wrap">
+          <img class="lock-image" src="CLICK 로고.png" alt="성공 이미지" onerror="this.style.display='none'" />
+        </div>
+
+        <div class="meter-row" aria-hidden="true">
+          <span class="meter-label">SECURITY</span>
+          <img class="heart-icon" src="pixel-heart.png" alt="" />
+          <img class="heart-icon" src="pixel-heart.png" alt="" />
+          <img class="heart-icon" src="pixel-heart.png" alt="" />
+        </div>
+
+        <div class="status">보안 복구 완료</div>
+        <div class="desc" id="successMessage">
+          축하합니다. 보안 퀴즈를 통과해 학생회 잠금 시스템이 다시 잠겼습니다.
+        </div>
+        <div class="button-group">
+          <button class="primary" onclick="restartGame()">다시 시작하기</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      GitHub에 아래 파일을 같은 폴더에 함께 올리면 바로 적용됩니다:<br />
+      <b>open-lock-logo.png</b> / <b>pixel-heart.png</b> / <b>pink-cloud.png</b>
+    </div>
+  </div>
+
+  <div class="transition-overlay" id="transitionOverlay">
+    <div class="transition-box">
+      <div class="transition-lock">🔐</div>
+      <div class="transition-text">SYSTEM RELOCKING...<br />잠금 시스템을 다시 설정하고 있습니다.</div>
+    </div>
+  </div>
+
+  <script>
+    const quizzes = [
+      {
+        type: 'choice',
+        title: '✦ 보안 퀴즈 1',
+        question: '다음 중 가장 안전한 행동은 무엇일까요?',
+        options: ['모르는 링크 바로 누르기', '출처 모를 USB 꽂기', '2단계 인증 설정하기'],
+        answer: '2단계 인증 설정하기',
+        success: '정답입니다. 추가 인증으로 보안 수준이 올라갔습니다.'
+      },
+      {
+        type: 'choice',
+        title: '✦ 보안 퀴즈 2',
+        question: 'HTTPS를 사용하는 가장 큰 이유는 무엇일까요?',
+        options: ['사이트가 더 예뻐 보여서', '데이터 전송을 더 안전하게 하기 위해', '인터넷이 무조건 빨라져서'],
+        answer: '데이터 전송을 더 안전하게 하기 위해',
+        success: '정답입니다. 안전한 통신으로 자물쇠 복구가 진행됩니다.'
+      },
+      {
+        type: 'choice',
+        title: '✦ 보안 퀴즈 3',
+        question: '다음 중 가장 안전한 비밀번호는 무엇일까요?',
+        options: ['12345678', 'password', 'P@ssw0rd!2026'],
+        answer: 'P@ssw0rd!2026',
+        success: '정답입니다. 강력한 비밀번호로 잠금 시스템이 강화되었습니다.'
+      }
+    ];
+
+    let currentQuiz = null;
+    let sequenceRunning = false;
+
+    function goToPage(pageNumber) {
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      document.getElementById(`page${pageNumber}`).classList.add('active');
+
+      if (pageNumber === 2) {
+        loadQuiz();
+      }
+    }
+
+    function showTransition() {
+      document.getElementById('transitionOverlay').classList.add('show');
+    }
+
+    function hideTransition() {
+      document.getElementById('transitionOverlay').classList.remove('show');
+    }
+
+    function getRandomQuiz() {
+      const index = Math.floor(Math.random() * quizzes.length);
+      return quizzes[index];
+    }
+
+    function loadQuiz() {
+      currentQuiz = getRandomQuiz();
+      document.getElementById('missionTitle').textContent = currentQuiz.title;
+      document.getElementById('missionQuestion').textContent = currentQuiz.question;
+
+      const feedbackBox = document.getElementById('feedbackBox');
+      feedbackBox.className = 'feedback';
+      feedbackBox.textContent = '정답을 선택하면 자물쇠를 다시 잠글 수 있습니다.';
+
+      const missionContent = document.getElementById('missionContent');
+      missionContent.innerHTML = '';
+
+      if (currentQuiz.type === 'choice') {
+        const buttonGroup = document.createElement('div');
+        buttonGroup.className = 'button-group';
+
+        currentQuiz.options.forEach(option => {
+          const button = document.createElement('button');
+          button.className = 'secondary';
+          button.textContent = option;
+          button.addEventListener('click', () => checkAnswer(option));
+          buttonGroup.appendChild(button);
+        });
+
+        missionContent.appendChild(buttonGroup);
+      }
+    }
+
+    function checkAnswer(selected) {
+      const feedbackBox = document.getElementById('feedbackBox');
+
+      if (selected === currentQuiz.answer) {
+        feedbackBox.className = 'feedback success';
+        feedbackBox.textContent = '정답입니다. 잠시 후 성공 화면으로 이동합니다...';
+        showTransition();
+
+        setTimeout(() => {
+          document.getElementById('successMessage').textContent = `${currentQuiz.success} CLICK 보안 자물쇠가 다시 잠겼습니다.`;
+          hideTransition();
+          goToPage(3);
+        }, 1400);
+      } else {
+        feedbackBox.className = 'feedback error';
+        feedbackBox.textContent = '오답입니다. 다시 한 번 생각해 보세요.';
+      }
+    }
+
+    function restartGame() {
+      hideTransition();
+      goToPage(1);
+    }
+
+    function startLockSequence() {
+      if (sequenceRunning) return;
+      sequenceRunning = true;
+
+      const lock = document.getElementById('openLockImage');
+      const sound = document.getElementById('clickSound');
+
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(() => {});
+      }
+
+      lock.classList.add('lock-open');
+
+      setTimeout(() => {
+        goToPage(2);
+        lock.classList.remove('lock-open');
+        sequenceRunning = false;
+      }, 850);
+    }
+  </script>
+</body>
+</html>
