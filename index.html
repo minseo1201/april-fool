@@ -47,30 +47,7 @@
       position: relative;
     }
 
-    .cloud-deco {
-      position: fixed;
-      left: 0;
-      width: 100%;
-      pointer-events: none;
-      z-index: 0;
-      background-image: url('pink-cloud.png');
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: min(720px, 92vw) auto;
-      opacity: 0.95;
-    }
-
-    .cloud-top {
-      top: 6px;
-      height: 240px;
-    }
-
-    .cloud-bottom {
-      bottom: 10px;
-      height: 240px;
-      transform: scaleY(-1);
-      opacity: 0.5;
-    }
+    
 
     .container {
       position: relative;
@@ -463,8 +440,7 @@
   </style>
 </head>
 <body>
-  <div class="cloud-deco cloud-top" aria-hidden="true"></div>
-  <div class="cloud-deco cloud-bottom" aria-hidden="true"></div>
+  
 
   <div class="container">
     <div class="pixel-stars" aria-hidden="true">
@@ -485,7 +461,23 @@
       열린 자물쇠를 다시 잠그려면 보안 퀴즈를 통과해 주세요.
     </div>
 
-    <section id="page1" class="page active">
+    <section id="introPage" class="page active">
+      <div class="card center">
+        <div class="lock-wrap">
+          <img class="lock-image" src="cat-helper.png" alt="도움을 요청하는 고양이 캐릭터" />
+        </div>
+        <div class="mission-title">도와줘요!</div>
+        <div class="desc" style="max-width:520px; margin: 0 auto 18px; background:#fff5fb; padding:16px; border:3px solid #ffc8e1; box-shadow:4px 4px 0 #ffdceb;">
+          만우절 거짓말 기운 때문에 사이버보안학과의 자물쇠가 풀려버렸어~!<br />
+          보안 퀴즈를 풀고 다시 잠글 수 있도록 도와줄래?
+        </div>
+        <div class="button-group">
+          <button class="primary" onclick="goToPage(1)">도와주기</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="page1" class="page">
       <div class="card center">
         <div class="lock-wrap">
           <img class="lock-image clickable-lock" id="openLockImage" src="open-lock-logo.png" alt="열린 자물쇠" onclick="startLockSequence()" />
@@ -547,10 +539,7 @@
       </div>
     </section>
 
-    <div class="footer-note">
-      GitHub에 아래 파일을 같은 폴더에 함께 올리면 바로 적용됩니다:<br />
-      <b>open-lock-logo.png</b> / <b>pixel-heart.png</b> / <b>pink-cloud.png</b>
-    </div>
+    
   </div>
 
   <div class="transition-overlay" id="transitionOverlay">
@@ -593,7 +582,8 @@
 
     function goToPage(pageNumber) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-      document.getElementById(`page${pageNumber}`).classList.add('active');
+      const targetId = pageNumber === 0 ? 'introPage' : `page${pageNumber}`;
+      document.getElementById(targetId).classList.add('active');
 
       if (pageNumber === 2) {
         loadQuiz();
