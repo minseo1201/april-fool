@@ -47,8 +47,6 @@
       position: relative;
     }
 
-    
-
     .container {
       position: relative;
       width: 100%;
@@ -190,7 +188,7 @@
     .desc {
       color: var(--text);
       font-size: 1rem;
-      line-height: 1.85;
+      line-height: 1.9;
       margin-bottom: 18px;
     }
 
@@ -208,7 +206,7 @@
 
     .question {
       margin-bottom: 18px;
-      line-height: 1.8;
+      line-height: 1.9;
       white-space: pre-line;
       font-size: 1rem;
     }
@@ -229,6 +227,7 @@
       font-size: 0.98rem;
       cursor: pointer;
       font-weight: 900;
+      line-height: 1.4;
       box-shadow: 0 0 0 3px #ffdceb, 4px 4px 0 #c25993;
       transition: transform .08s steps(2, end), box-shadow .08s steps(2, end), filter .12s ease;
       text-shadow: 1px 1px 0 #b33f79;
@@ -315,7 +314,7 @@
       min-height: 62px;
       padding: 14px 16px;
       margin-top: 18px;
-      line-height: 1.75;
+      line-height: 1.8;
       font-weight: 700;
       background: #fffafd;
       border: 3px dashed #ffb6d8;
@@ -417,31 +416,71 @@
       filter: grayscale(0.25) brightness(1.08);
     }
 
-    .footer-note {
-      text-align: center;
-      color: #8d6d62;
-      font-size: 0.92rem;
-      line-height: 1.8;
-      margin-top: 18px;
-      padding: 12px 16px;
-      background: #fff2f8;
-      border: 3px solid #ffc4df;
+    #successMessage {
+      white-space: pre-line;
     }
 
     @media (max-width: 640px) {
-      .container { padding: 18px; }
-      .card { padding: 20px 16px; }
-      .title { font-size: 1.5rem; }
-      button { width: 100%; }
-      .button-group { gap: 10px; }
-      .lock-wrap::before, .lock-wrap::after { display: none; }
-      .cloud-top, .cloud-bottom { background-size: 92vw auto; }
+      body {
+        padding: 18px 10px;
+      }
+
+      .container {
+        padding: 18px;
+      }
+
+      .card {
+        padding: 20px 16px;
+      }
+
+      .title {
+        font-size: 1.5rem;
+      }
+
+      .subtitle,
+      .desc,
+      .question,
+      .feedback {
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+
+      .desc,
+      .question {
+        font-size: 0.95rem;
+        line-height: 1.95;
+      }
+
+      .status {
+        font-size: 1.22rem;
+        line-height: 1.5;
+      }
+
+      .mission-title {
+        font-size: 1rem;
+        line-height: 1.4;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .button-group {
+        gap: 10px;
+      }
+
+      .lock-wrap::before,
+      .lock-wrap::after {
+        display: none;
+      }
+
+      .lock-image {
+        max-width: 86%;
+      }
     }
   </style>
 </head>
 <body>
-  
-
   <div class="container">
     <div class="pixel-stars" aria-hidden="true">
       <span>✦</span>
@@ -465,7 +504,8 @@
       <div class="card center">
         <div class="lock-wrap">
           <img class="lock-image" src="cat-helper.png" alt="도움을 요청하는 고양이 캐릭터" />
-        </div>        <div class="desc" style="max-width:520px; margin: 0 auto 18px; background:#fff5fb; padding:16px; border:3px solid #ffc8e1; box-shadow:4px 4px 0 #ffdceb;">
+        </div>
+        <div class="desc" style="max-width:520px; margin: 0 auto 18px; background:#fff5fb; padding:16px; border:3px solid #ffc8e1; box-shadow:4px 4px 0 #ffdceb;">
           만우절 거짓말 기운 때문에 사이버보안학과의 자물쇠가 풀려버렸어~!<br />
           보안 퀴즈를 풀고 다시 잠글 수 있도록 도와줄래?
         </div>
@@ -536,8 +576,6 @@
         </div>
       </div>
     </section>
-
-    
   </div>
 
   <div class="transition-overlay" id="transitionOverlay">
@@ -638,7 +676,8 @@
         showTransition();
 
         setTimeout(() => {
-          document.getElementById('successMessage').textContent = `${currentQuiz.success}\n\nCLICK 보안 자물쇠가 다시 잠겼습니다.`;
+          document.getElementById('successMessage').textContent =
+            `${currentQuiz.success}\n\nCLICK 보안 자물쇠가 다시 잠겼습니다.`;
           hideTransition();
           goToPage(3);
         }, 1400);
@@ -650,7 +689,7 @@
 
     function restartGame() {
       hideTransition();
-      goToPage(1);
+      goToPage(0);
     }
 
     function startLockSequence() {
